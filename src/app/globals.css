@@ -12,3 +12,7 @@
   mask-image: url("/images/home/shape1.svg");
   mask-size: 100% 100%;
 }
+
+.btn-primary {
+  @apply bg-brand-400 font-semibold px-6 py-2 rounded-xl focus:ring focus:outline-none focus:ring-brand-400 transition-[box-shadow] focus:ring-offset-2;
+}

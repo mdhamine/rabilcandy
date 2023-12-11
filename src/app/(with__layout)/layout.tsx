@@ -1,4 +1,6 @@
+import { Popup } from "@/components/common/Popup";
 import { Tiktok } from "@/components/icons/Tiktok";
+import { HeaderCartIcon } from "@/components/layout/HeaderCartIcon";
 import { Facebook, Instagram, ShoppingCart } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -17,7 +19,9 @@ export default function AppLayout({ children }: { children: ReactNode }) {
             height={40}
           />
         </Link>
-        <ShoppingCart />
+        <Link href="/cart">
+          <HeaderCartIcon />
+        </Link>
       </nav>
       <main className="p-4 ">{children}</main>
       <footer>
@@ -32,6 +36,7 @@ export default function AppLayout({ children }: { children: ReactNode }) {
           </p>
         </div>
       </footer>
+      <Popup />
     </>
   );
 }

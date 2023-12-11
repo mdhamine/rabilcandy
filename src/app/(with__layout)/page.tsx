@@ -15,12 +15,16 @@ export default function Home() {
           </h1>
         </div>
         <div className="grid place-items-center mt-4 space-y-2">
-          <button className="bg-brand-400 font-semibold px-6 py-2 rounded-xl focus:ring focus:outline-none focus:ring-brand-400 transition-[box-shadow] focus:ring-offset-2">
-            <Link href="/products">Click here to Shop</Link>
-          </button>
-          <button className="border-[3px] border-brand-400 font-semibold px-6 py-1.5 rounded-xl focus:ring focus:outline-none focus:ring-brand-400 transition-[box-shadow] focus:ring-offset-2">
-            Go to cart
-          </button>
+          <Link href="/products">
+            <button className="bg-brand-400 font-semibold px-6 py-2 rounded-xl focus:ring focus:outline-none focus:ring-brand-400 transition-[box-shadow] focus:ring-offset-2">
+              Click here to Shop
+            </button>
+          </Link>
+          <Link href="/cart">
+            <button className="border-[3px] border-brand-400 font-semibold px-6 py-1.5 rounded-xl focus:ring focus:outline-none focus:ring-brand-400 transition-[box-shadow] focus:ring-offset-2">
+              Go to cart
+            </button>
+          </Link>
         </div>
         <div className="masked-hero-image max-w-md w-3/4 mx-auto mt-8">
           <Image
