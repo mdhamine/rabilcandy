@@ -17,8 +17,9 @@ export const CheckoutForm = () => {
     const fullname = document.forms["product-info" as any]["fullname"]?.value;
     const phone = document.forms["product-info" as any]["phone"]?.value;
     const address = document.forms["product-info" as any]["address"]?.value;
+    const delivery = document.forms["product-info" as any]["delivery"]?.value;
 
-    if (!fullname || !phone || !address) {
+    if (!fullname || !phone || !address || !delivery) {
       return alert(`Please fill all fields`);
     }
 
@@ -29,6 +30,7 @@ export const CheckoutForm = () => {
         phone,
         address,
         products: cartState,
+        delivery,
       }),
       headers: {
         "Content-Type": "application/json",
@@ -101,6 +103,17 @@ export const CheckoutForm = () => {
                 {option}
               </option>
             ))}
+          </select>
+        </div>
+        <div className="flex flex-col">
+          <label htmlFor="delivery">Delivery Type</label>
+          <select
+            name="delivery"
+            id="delivery"
+            className="h-10 border-2 border-brand-300 rounded-lg px-3"
+          >
+            <option value="type 1">Type 1</option>
+            <option value="type 2">Type 2</option>
           </select>
         </div>
         <div className="pt-4">

@@ -39,6 +39,7 @@ export async function POST(req: NextRequest) {
         Fullname: ${body.fullname}
         Phone: ${body.phone}
         Address: ${body.address}
+        Delivery Type: ${body.delivery}
 
         -----------------------------------------------
 
