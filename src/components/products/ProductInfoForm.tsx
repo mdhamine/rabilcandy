@@ -3,6 +3,7 @@ import { cartAtom } from "../common/Cart/atom";
 import { useAtom } from "jotai";
 import { popupAtom } from "../common/Popup/atom";
 import { FormEvent } from "react";
+import { Plus } from "lucide-react";
 
 export const ProductInfoForm = ({ product }: { product: IProduct }) => {
   const [cartState, setCartState] = useAtom(cartAtom);
@@ -56,7 +57,19 @@ export const ProductInfoForm = ({ product }: { product: IProduct }) => {
 
   return (
     <div className="bg-white w-11/12 p-4 rounded-xl">
-      <p className="font-semibold text-xl">Select options</p>
+      <div className="flex justify-between items-center">
+        <p className="font-semibold text-xl">Select options</p>
+        <button
+          onClick={() => {
+            setPopupState({
+              open: false,
+            });
+          }}
+          className="rotate-45 bg-gray-100 p-0.5 rounded-full grid place-items-center"
+        >
+          <Plus size={20} />
+        </button>
+      </div>
       <form className="my-2" onSubmit={handleSubmit} name="product-info">
         <div>
           <label htmlFor="size" className="mr-4">
