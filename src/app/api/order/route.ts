@@ -14,8 +14,8 @@ export async function POST(req: NextRequest) {
 
     const smtpConfig = {
       host: process.env.SMTP_HOST,
-      port: 587, //465,
-      //   secure: true,
+      port: 465, // 587, //465,
+      secure: true,
       auth: {
         user: process.env.SENDER_EMAIL,
         pass: process.env.SENDER_PASSWORD,
