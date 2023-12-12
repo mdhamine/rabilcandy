@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import { Product } from "@/app/api/product/model";
 import { ChevronLeft } from "lucide-react";
 import Link from "next/link";

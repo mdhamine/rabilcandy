@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import { Product } from "@/app/api/product/model";
 import { IProduct } from "@/data/products";
 import ProductCard from "./components/ProductCard";
