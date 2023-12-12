@@ -1,11 +1,38 @@
 "use client";
 
-import { Tiktok } from "@/components/icons/Tiktok";
-import { Facebook, Instagram, ShoppingCart } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { FormEvent, useState } from "react";
 
 export default function Home() {
+  const [isLoading, setIsLoading] = useState(false);
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    setIsLoading(true);
+    e.preventDefault();
+
+    const fullname = document.forms["contact" as any]["fullname"];
+    const message = document.forms["contact" as any]["message"];
+
+    try {
+      await fetch("https://formsubmit.co/ajax/lionel61@ethereal.email", {
+        method: "POST",
+        body: JSON.stringify({
+          fullname: fullname.value,
+          message: message.value,
+        }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+    } catch (error) {
+      console.error(error);
+    } finally {
+      fullname.value = "";
+      message.value = "";
+      setIsLoading(false);
+      alert("We have successfully received your message.");
+    }
+  };
   return (
     <>
       <div data-aos="fade-up">
@@ -64,6 +91,45 @@ export default function Home() {
             className="rounded-[40px]"
             data-aos="fade-up"
           />
+        </div>
+      </div>
+      <div data-aos="fade-up" className="mt-8">
+        <p className="text-brand-500 text-center font-bold text-2xl">
+          Contact Us
+        </p>
+        <div className="text-brand-600 text-center flex justify-center gap-2">
+          <span>Phone</span>
+          <span>+98 937 748 45</span>
+        </div>
+        <div className="mx-auto mt-4 w-[90%] bg-brand-300 p-4 py-6 rounded-2xl">
+          <form className="space-y-4" onSubmit={handleSubmit} name="contact">
+            <div>
+              <label htmlFor="fullname">Your fullname</label>
+              <input
+                type="text"
+                className="border-2 border-brand-300 py-2 h-10 rounded-lg px-3 w-full"
+                placeholder="Fullname"
+                name="fullname"
+                id="fullname"
+              />
+            </div>
+            <div>
+              <label htmlFor="message">Your Message</label>
+              <textarea
+                rows={5}
+                className="border-2 border-brand-300 py-2 rounded-lg px-3 w-full"
+                placeholder="message"
+                name="message"
+                id="message"
+              />
+            </div>
+            <button
+              disabled={isLoading}
+              className="bg-brand-500 disabled:opacity-50 disabled:pointer-events-none mt-4 font-semibold px-3 py-1.5 text-sm rounded-xl focus:ring focus:outline-none focus:ring-brand-400 transition-[box-shadow] focus:ring-offset-2"
+            >
+              {isLoading ? "Sendng..." : "Send Message"}
+            </button>
+          </form>
         </div>
       </div>
     </>
