@@ -21,7 +21,7 @@ export const GET = async (req: NextRequest) => {
     console.log(err);
     return NextResponse.json({
       success: false,
-      messsage: "Something went south",
+      messsage: JSON.stringify(err),
     });
   }
 };
