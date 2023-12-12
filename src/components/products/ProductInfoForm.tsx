@@ -1,14 +1,14 @@
-import { Product } from "@/data/products";
+import { IProduct } from "@/data/products";
 import { cartAtom } from "../common/Cart/atom";
 import { useAtom } from "jotai";
 import { popupAtom } from "../common/Popup/atom";
 import { FormEvent } from "react";
 
-export const ProductInfoForm = ({ product }: { product: Product }) => {
+export const ProductInfoForm = ({ product }: { product: IProduct }) => {
   const [cartState, setCartState] = useAtom(cartAtom);
   const [, setPopupState] = useAtom(popupAtom);
 
-  const isAlreadyInCart = cartState.find((item) => item.id === product.id);
+  const isAlreadyInCart = cartState.find((item) => item.slug === product.slug);
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -21,7 +21,7 @@ export const ProductInfoForm = ({ product }: { product: Product }) => {
       // update the size and color to latest selected values
       setCartState((prev) => {
         return prev.map((item) => {
-          if (item.id === product.id) {
+          if (item.slug === product.slug) {
             return {
               ...item,
               size,
@@ -35,10 +35,11 @@ export const ProductInfoForm = ({ product }: { product: Product }) => {
       alert(`Item updated in cart`);
     } else {
       setCartState((prev) => {
+        if (!prev) return [];
         return [
           ...prev,
           {
-            id: product.id,
+            slug: product.slug!,
             size,
             color,
           },
@@ -62,7 +63,7 @@ export const ProductInfoForm = ({ product }: { product: Product }) => {
             Size
           </label>
           <select className="bg-gray-200 rounded-lg p-1" name="size" id="size">
-            {product.sizes.map((size) => (
+            {product?.sizes?.map((size) => (
               <option key={size} value={size}>
                 {size}
               </option>
@@ -78,7 +79,7 @@ export const ProductInfoForm = ({ product }: { product: Product }) => {
             name="color"
             id="color"
           >
-            {product.color.map((color) => (
+            {product?.color?.map((color) => (
               <option key={color} value={color}>
                 {color}
               </option>

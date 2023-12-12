@@ -1,36 +1,29 @@
-"use client";
-
-import { cartAtom } from "@/components/common/Cart/atom";
-import { popupAtom } from "@/components/common/Popup/atom";
-import { ProductInfoForm } from "@/components/products/ProductInfoForm";
-import { getProductById } from "@/data/products";
-import { useAtom } from "jotai";
+import { Product } from "@/app/api/product/model";
 import { ChevronLeft } from "lucide-react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { ProductInfo } from "../components/ProductInfo";
+import { connectDB } from "@/app/api/_db/connectDB";
 
-export default function ProductsDetail({
+async function getProductById(productId: string) {
+  await connectDB();
+  const product = await Product.findOne({ slug: productId }).sort({
+    createdAt: "asc",
+  });
+
+  return JSON.parse(JSON.stringify(product));
+}
+
+export default async function ProductsDetail({
   params,
 }: {
   params: { productId: string };
 }) {
-  const product = getProductById(params.productId);
-
-  const [, setPopupState] = useAtom(popupAtom);
-  const [cartState] = useAtom(cartAtom);
+  const product = await getProductById(params.productId);
 
   if (!product) {
     return redirect("/products");
   }
-
-  const isAlreadyInCart = cartState.find((item) => item.id === product.id);
-
-  const handlePopupOpen = () => {
-    setPopupState({
-      open: true,
-      component: <ProductInfoForm product={product} />,
-    });
-  };
 
   return (
     <>
@@ -42,36 +35,7 @@ export default function ProductsDetail({
           <span>Back</span>
         </span>
       </Link>
-      {/* eslint-disable-next-line  */}
-      <img className="mt-4" src={product?.thumbnail} alt={product.name} />
-      <div className="mb-4 mt-2">
-        <p className="text-brand-500 text-xl font-semibold">{product.name}</p>
-        <p className="mt-1">{product?.description}</p>
-      </div>
-
-      <p>
-        {product.price} {product.currency}
-      </p>
-      {product.sizes.length > 0 && <p>Sizes: {product.sizes.join(", ")}</p>}
-      {product.color.length > 0 && (
-        <p>
-          Colors: <span className="capitalize">{product.color.join(", ")}</span>
-        </p>
-      )}
-      {product.outOfStock && (
-        <div className="text-center bg-brand-400/30 rounded-lg py-1 mt-2">
-          Out of stock
-        </div>
-      )}
-      <div className="mt-4 grid place-items-center">
-        <button
-          disabled={product.outOfStock}
-          className="disabled:opacity-50 disabled:pointer-events-none btn-primary"
-          onClick={handlePopupOpen}
-        >
-          {isAlreadyInCart ? "Update cart" : "Add to cart"}
-        </button>
-      </div>
+      <ProductInfo product={product} />
     </>
   );
 }

@@ -1,7 +1,7 @@
 import { atomWithStorage } from "jotai/utils";
 
 interface Cart {
-  id: string;
+  slug: string;
   size?: string;
   color?: string;
 }
