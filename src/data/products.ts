@@ -42,6 +42,7 @@
 
 export type IProduct = Partial<{
   readonly id: string;
+  readonly _id: string;
   slug: string;
   name: string;
   thumbnail: string;

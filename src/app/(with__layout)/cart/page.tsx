@@ -16,7 +16,7 @@ export default function Cart() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    if (!cartState.length) return;
+    if (!cartState.length) { setIsLoading(false); setProducts([]); return;}
     (async () => {
       // console.log(cartState, "cartState");
       setIsLoading(true);
@@ -58,7 +58,7 @@ export default function Cart() {
           // if (!item) return null;
           const item = cartState.find((item) => item.slug === product?.slug);
           return (
-            <div key={item?.slug} className="">
+            <div key={product?._id} className="">
               <div className="relative">
                 {/* eslint-disable-next-line */}
                 <img src={product?.thumbnail} alt={product?.name} />
@@ -89,7 +89,7 @@ export default function Cart() {
           </Link>
         </>
       )}
-      {!isLoading && (
+      {!isLoading && products.length !== 0 && (
         <>
           <div className="h-0.5 bg-brand-300 my-4" />
           <div className="flex justify-between items-center">

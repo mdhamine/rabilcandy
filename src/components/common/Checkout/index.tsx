@@ -1,32 +1,71 @@
 import { useAtom } from "jotai";
-import { FormEvent } from "react";
+import { FormEvent, useState } from "react";
 import { cartAtom } from "../Cart/atom";
 import { popupAtom } from "../Popup/atom";
 import { SelectOptions } from "@/data/select";
+import { Plus } from "lucide-react";
 
 export const CheckoutForm = () => {
-  const [, setCartState] = useAtom(cartAtom);
+  const [cartState, setCartState] = useAtom(cartAtom);
   const [, setPopupState] = useAtom(popupAtom);
+  const [submitting, setSubmitting] = useState(false);
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    setSubmitting(true);
     e.preventDefault();
 
-    const size = document.forms["product-info" as any]["size"]?.value;
-    const color = document.forms["product-info" as any]["color"]?.value;
+    const fullname = document.forms["product-info" as any]["fullname"]?.value;
+    const phone = document.forms["product-info" as any]["phone"]?.value;
+    const address = document.forms["product-info" as any]["address"]?.value;
 
-    alert(`We will contact you shortly via your email`);
+    if (!fullname || !phone || !address) {
+      return alert(`Please fill all fields`);
+    }
+
+    const res = await fetch("/api/order", {
+      method: "POST",
+      body: JSON.stringify({
+        fullname,
+        phone,
+        address,
+        products: cartState,
+      }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    const json = await res.json();
+
+    alert(
+      json?.message ||
+        `We have received your order and will contact you shortly`
+    );
 
     setPopupState({
       open: false,
     });
     setCartState([]);
+    setSubmitting(false);
   };
 
   return (
     <div className="bg-white w-11/12 p-4 rounded-xl">
-      <p className="font-semibold text-xl">Enter Details</p>
+      <div className="flex justify-between items-center">
+        <p className="font-semibold text-xl">Enter Details</p>
+        <button
+          onClick={() => {
+            setPopupState({
+              open: false,
+            });
+          }}
+          className="rotate-45 bg-gray-100 p-0.5 rounded-full grid place-items-center"
+        >
+          <Plus size={20} />
+        </button>
+      </div>
       <form
-        className="my-2 space-y-2"
+        className="my-2 space-y-2 mt-4"
         onSubmit={handleSubmit}
         name="product-info"
       >
@@ -41,16 +80,6 @@ export const CheckoutForm = () => {
           />
         </div>
         <div>
-          <label htmlFor="email">Your Email</label>
-          <input
-            type="email"
-            className="border-2 border-brand-300 py-2 h-10 rounded-lg px-3 w-full"
-            placeholder="Email"
-            name="email"
-            id="email"
-          />
-        </div>
-        <div>
           <label htmlFor="phone">Your Phone</label>
           <input
             type="text"
@@ -60,21 +89,11 @@ export const CheckoutForm = () => {
             id="phone"
           />
         </div>
-        <div>
+        <div className="flex flex-col">
           <label htmlFor="address">Your Address</label>
-          <input
-            type="text"
-            className="border-2 border-brand-300 py-2 h-10 rounded-lg px-3 w-full"
-            placeholder="Address"
+          <select
             name="address"
             id="address"
-          />
-        </div>
-        <div className="flex flex-col">
-          <label htmlFor="select">Select</label>
-          <select
-            name="select"
-            id="select"
             className="h-10 border-2 border-brand-300 rounded-lg px-3"
           >
             {SelectOptions.map((option) => (
@@ -85,8 +104,11 @@ export const CheckoutForm = () => {
           </select>
         </div>
         <div className="pt-4">
-          <button className="bg-brand-400 w-full font-semibold px-3 py-3 text-sm rounded-xl focus:ring focus:outline-none focus:ring-brand-400 transition-[box-shadow] focus:ring-offset-2">
-            Place Order
+          <button
+            disabled={submitting}
+            className="bg-brand-400 disabled:opacity-60 w-full font-semibold px-3 py-3 text-sm rounded-xl focus:ring focus:outline-none focus:ring-brand-400 transition-[box-shadow] focus:ring-offset-2"
+          >
+            {submitting ? "Submitting" : "Place Order"}
           </button>
         </div>
       </form>
