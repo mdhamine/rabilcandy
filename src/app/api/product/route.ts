@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import { NextRequest, NextResponse } from "next/server";
 import { withDatabase } from "../_db/withDatabase";
 import { Product } from "./model";

@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import { NextRequest, NextResponse } from "next/server";
 import nodemailer from "nodemailer";
 import { Product } from "../product/model";
@@ -56,6 +58,9 @@ export async function POST(req: NextRequest) {
         })}
 
         -----------------------------------------------
+        Total: ${orderedProducts.reduce((acc, curr) => {
+          return acc + curr.price;
+        }, 0)}
         Order Received on: ${new Date().toISOString()}
       `,
     };
