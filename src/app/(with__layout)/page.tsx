@@ -14,7 +14,7 @@ export default function Home() {
     const message = document.forms["contact" as any]["message"];
 
     try {
-      await fetch("https://formsubmit.co/ajax/lionel61@ethereal.email", {
+      await fetch("https://formsubmit.co/ajax/cyn.webservices@gmail.com", {
         method: "POST",
         body: JSON.stringify({
           fullname: fullname.value,
