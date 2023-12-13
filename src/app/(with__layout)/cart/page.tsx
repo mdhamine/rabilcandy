@@ -5,40 +5,78 @@ import { CheckoutForm } from "@/components/common/Checkout";
 import { popupAtom } from "@/components/common/Popup/atom";
 import { IProduct } from "@/data/products";
 import { useAtom } from "jotai";
+import { Minus, Plus } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
 export default function Cart() {
   const [cartState, setCartState] = useAtom(cartAtom);
   const [popupState, setPopupState] = useAtom(popupAtom);
+  const [shouldRefetchProducts, setShouldRefetchProducts] = useState(true);
 
   const [products, setProducts] = useState([] as IProduct[]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    if (!cartState.length) {
-      setIsLoading(false);
-      setProducts([]);
-      return;
-    }
     (async () => {
-      // console.log(cartState, "cartState");
-      setIsLoading(true);
-      const res = await fetch(
-        `/api/product?slugs=${cartState.map((item) => item.slug).join(",")}`
-      );
-      const json = await res.json();
+      if (shouldRefetchProducts) {
+        if (!cartState.length) {
+          setIsLoading(false);
+          setProducts([]);
+          return;
+        }
 
-      setProducts(json?.data || []);
-      setIsLoading(false);
+        setIsLoading(true);
+        const res = await fetch(
+          `/api/product?slugs=${cartState.map((item) => item.slug).join(",")}`
+        );
+        const json = await res.json();
 
-      // console.log(json, "json");
+        setProducts(json?.data || []);
+        setIsLoading(false);
+      }
+      setShouldRefetchProducts(false);
     })();
-  }, [cartState]);
+  }, [shouldRefetchProducts, cartState]);
 
   const handleItemRemove = (id?: string) => {
     setCartState((prev) => {
       return prev.filter((item) => item.slug !== id);
+    });
+    setShouldRefetchProducts(true);
+  };
+
+  const handleQuantityDecrease = (itemSlug?: string) => {
+    if (!cartState) return;
+
+    setCartState((prev) => {
+      return prev.map((item) => {
+        if (item.slug === itemSlug) {
+          if (!item.quantity) {
+            item.quantity = 1;
+          } else {
+            item.quantity -= 1;
+          }
+        }
+
+        return item;
+      });
+    });
+  };
+
+  const handleQuantityIncrease = (product: IProduct, itemSlug?: string) => {
+    if (!cartState) return;
+
+    setCartState((prev) => {
+      return prev.map((item) => {
+        if (item.slug === itemSlug) {
+          if (item.quantity !== product.stock) {
+            item.quantity = (item.quantity || 0) + 1;
+          }
+        }
+
+        return item;
+      });
     });
   };
 
@@ -85,6 +123,28 @@ export default function Cart() {
               <p>
                 Price: {product?.price} {product?.currency}
               </p>
+              <div className="mt-2 mb-6 flex items-center">
+                <label htmlFor="color" className="mr-4">
+                  Quantity
+                </label>
+                <div className="flex gap-4 items-center">
+                  <button
+                    type="button"
+                    className="h-6 inline-grid place-items-center w-6 bg-brand-400 rounded-full"
+                    onClick={() => handleQuantityDecrease(item?.slug)}
+                  >
+                    <Minus size={16} />
+                  </button>
+                  <span className="text-xl">{item?.quantity}</span>
+                  <button
+                    type="button"
+                    className="h-6 inline-grid place-items-center w-6 bg-brand-400 rounded-full"
+                    onClick={() => handleQuantityIncrease(product, item?.slug)}
+                  >
+                    <Plus size={16} />
+                  </button>
+                </div>
+              </div>
             </div>
           );
         })}

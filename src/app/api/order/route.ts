@@ -54,17 +54,19 @@ export async function POST(req: NextRequest) {
 
         Products Ordered:
         ${orderedProducts.map((product: any, index: number) => {
+          const orderFromCustomer = body.products.find(
+            (p: any) => p.slug === product.slug
+          );
           return `
                 Product ${index + 1}
                 Name: ${product.name}
                 Price: ${product.price}
-                Size: ${
-                  body.products.find((p: any) => p.slug === product.slug)?.size
+                Quantity: ${orderFromCustomer?.quantity}
+                Size: ${orderFromCustomer?.size}
+                Color: ${orderFromCustomer?.color}
+                Stock Remaining: ${
+                  product.stock - orderFromCustomer?.quantity || 1
                 }
-                Color: ${
-                  body.products.find((p: any) => p.slug === product.slug)?.color
-                }
-                Stock Remaining: ${product.stock - 1}
             `;
         })}
 
@@ -85,14 +87,17 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    await Product.updateMany(
-      {
-        slug: { $in: body.products.map((product: any) => product.slug) },
-      },
-      {
-        $inc: { stock: -1 },
-      }
-    );
+    const productsInDb = await Product.find({
+      slug: { $in: body.products.map((product: any) => product.slug) },
+    });
+
+    productsInDb.forEach(async (product) => {
+      const orderFromCustomer = body.products.find(
+        (p: any) => p.slug === product.slug
+      );
+      product.stock = product.stock - orderFromCustomer?.quantity || 1;
+      await product.save();
+    });
 
     return NextResponse.json({
       success: true,
