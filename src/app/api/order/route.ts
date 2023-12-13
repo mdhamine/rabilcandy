@@ -10,11 +10,19 @@ export async function POST(req: NextRequest) {
 
     const orderedProducts = await Product.find({
       slug: { $in: body.products.map((product: any) => product.slug) },
-    }).select("name slug price");
+      stock: { $gt: 0 },
+    }).select("name slug price stock");
+
+    if (orderedProducts.length === 0) {
+      return NextResponse.json({
+        success: false,
+        message: "Products might be out of stock. Please order again later.",
+      });
+    }
 
     const smtpConfig = {
       host: process.env.SMTP_HOST,
-      port: 465, // 587, //465,
+      port: 465, // 587,
       secure: true,
       auth: {
         user: process.env.SENDER_EMAIL,
@@ -28,7 +36,8 @@ export async function POST(req: NextRequest) {
 
     const mailOptions = {
       from: process.env.SENDER_EMAIL,
-      to: process.env.RECEIVER_EMAIL,
+      to: ["wasape4325@getmola.com", process.env.RECEIVER_EMAIL || ""],
+      // to: process.env.RECEIVER_EMAIL,
       subject: "New order on the website",
       text: `
         You have received a new order on your website.
@@ -55,6 +64,7 @@ export async function POST(req: NextRequest) {
                 Color: ${
                   body.products.find((p: any) => p.slug === product.slug)?.color
                 }
+                Stock Remaining: ${product.stock - 1}
             `;
         })}
 
@@ -67,7 +77,22 @@ export async function POST(req: NextRequest) {
     };
 
     const info = await transporter.sendMail(mailOptions);
-    // console.log('Message sent: %s', info.messageId);
+
+    if (info.rejected.length > 0) {
+      return NextResponse.json({
+        success: false,
+        message: "Couldnt send email. Please order again later.",
+      });
+    }
+
+    await Product.updateMany(
+      {
+        slug: { $in: body.products.map((product: any) => product.slug) },
+      },
+      {
+        $inc: { stock: -1 },
+      }
+    );
 
     return NextResponse.json({
       success: true,

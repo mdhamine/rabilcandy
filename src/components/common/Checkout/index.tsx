@@ -44,10 +44,13 @@ export const CheckoutForm = () => {
         `We have received your order and will contact you shortly`
     );
 
+    if (json?.success) {
+      setCartState([]);
+    }
+
     setPopupState({
       open: false,
     });
-    setCartState([]);
     setSubmitting(false);
   };
 

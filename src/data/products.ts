@@ -53,5 +53,6 @@ export type IProduct = Partial<{
   new: boolean;
   description: string;
   outOfStock: boolean;
+  stock: number;
   readonly createdAt: string;
 }>;

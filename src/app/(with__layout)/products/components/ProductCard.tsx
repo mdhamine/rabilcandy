@@ -15,7 +15,7 @@ export default function ProductCard({ product }: { product: IProduct }) {
       component: <ProductInfoForm product={product} />,
     });
   };
-  const isOutOfStock = !!product.outOfStock;
+  const isOutOfStock = product.stock === 0;
   const isNew = !!product.new;
   const url = `/products/${product.slug}`;
 

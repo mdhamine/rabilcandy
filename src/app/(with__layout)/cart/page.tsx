@@ -16,7 +16,11 @@ export default function Cart() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    if (!cartState.length) { setIsLoading(false); setProducts([]); return;}
+    if (!cartState.length) {
+      setIsLoading(false);
+      setProducts([]);
+      return;
+    }
     (async () => {
       // console.log(cartState, "cartState");
       setIsLoading(true);
@@ -61,7 +65,11 @@ export default function Cart() {
             <div key={product?._id} className="">
               <div className="relative">
                 {/* eslint-disable-next-line */}
-                <img src={product?.thumbnail} alt={product?.name} />
+                <img
+                  className="rounded-xl"
+                  src={product?.thumbnail}
+                  alt={product?.name}
+                />
                 <button
                   onClick={() => handleItemRemove(item?.slug)}
                   className="absolute left-1/2 -translate-x-1/2 whitespace-nowrap bottom-4 bg-brand-400 font-semibold px-3 py-1 text-sm rounded-xl focus:ring focus:outline-none focus:ring-brand-400 transition-[box-shadow] focus:ring-offset-2"
